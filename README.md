@@ -25,9 +25,23 @@ This project is organized as a Maven multi-module Java application using Spring 
 
 ## Build
 
-```bash
-mvn clean install
-```
+## Build Steps
+
+1. **Navigate to the root directory:**
+   ```bash
+   cd /path/to/Search-Engine
+   ```
+
+2. **Link internal dependency versions:**
+   ```bash
+   find services -name "pom.xml" -exec sed -i '' '/<artifactId>shared<\/artifactId>/a\
+   \        <version>0.1.0-SNAPSHOT<\/version>' {} \;
+   ```
+
+3. **Run the clean build:**
+   ```bash
+   mvn clean install -U
+   ```
 
 ## Run
 
