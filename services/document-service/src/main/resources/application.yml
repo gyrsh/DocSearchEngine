@@ -3,3 +3,40 @@ server:
 spring:
   application:
     name: document-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: document-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+document:
+  events:
+    topics:
+      subscription: subscription-events
+      traffic: traffic-events
+      registry: registry-events
+  batch-processing:
+    traffic:
+      enabled: true
+      batch-size: 100
+      batch-timeout-ms: 5000
+      thread-pool-size: 10
+      shutdown-timeout-seconds: 30
+  thread-pools:
+    subscription:
+      core-size: 2
+      max-size: 4
+      queue-capacity: 50
+    traffic:
+      core-size: 10
+      max-size: 20
+      queue-capacity: 200
+    registry:
+      core-size: 1
+      max-size: 2
+      queue-capacity: 50
+
