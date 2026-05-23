@@ -44,6 +44,12 @@ public class ParallelTrafficBatchProcessor {
         int totalDocuments = events.size();
         logger.info("Starting parallel batch processing: {} documents", totalDocuments);
 
+        /*
+         * 1. INITIALIZE THE BARRIER
+         * Set the latch counter to the total number of tasks. The main thread
+         * will use this to know exactly how many operations it needs to wait for.
+         */
+
         CountDownLatch latch = new CountDownLatch(totalDocuments);
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger errorCount = new AtomicInteger(0);
@@ -64,13 +70,24 @@ public class ParallelTrafficBatchProcessor {
                     logger.error("Error processing traffic document: {}", eventDto, e);
                     errorCount.incrementAndGet();
                 } finally {
+                    /*
+                     * 2. SIGNAL TASK COMPLETION
+                     * This decrements the latch counter by 1. Placing it in 'finally'
+                     * guarantees the counter drops whether the task succeeds, fails,
+                     * or is skipped due to validation rules.
+                     */
                     latch.countDown();
                 }
             });
         }
 
         try {
-            // Wait for all tasks to complete
+            /*
+             * 3. BLOCK THE MAIN THREAD
+             * The main thread pauses here and waits until the latch counter reaches 0.
+             * The timeout protects the application from freezing forever if a background
+             * thread gets stuck or hangs indefinitely.
+             */
             boolean completed = latch.await(shutdownTimeoutSeconds, TimeUnit.SECONDS);
             if (!completed) {
                 logger.warn("Batch processing timeout after {} seconds. {} documents may not have completed",
