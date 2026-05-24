@@ -1,12 +1,14 @@
 server:
   port: 8085
+
 spring:
   application:
     name: document-service
   kafka:
-    bootstrap-servers: localhost:9092
+    # FIXED: Swapped port from 9092 to 9094 to communicate with your KRaft Docker container safely
+    bootstrap-servers: localhost:9094
     consumer:
-      group-id: document-service-group
+      # REMOVED: Global group-id taken out so each individual tier manages its own independent thread group state
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
@@ -16,9 +18,10 @@ spring:
 document:
   events:
     topics:
-      subscription: subscription-events
-      traffic: traffic-events
-      registry: registry-events
+      # FIXED: Standardised names to match your exact Kafdrop 3-tier system definitions
+      subscription: docs.subscription.high-priority
+      traffic: docs.traffic.medium-priority
+      registry: docs.registry.low-priority
   batch-processing:
     traffic:
       enabled: true
@@ -39,4 +42,3 @@ document:
       core-size: 1
       max-size: 2
       queue-capacity: 50
-
