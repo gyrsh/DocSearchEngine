@@ -5,6 +5,15 @@
 - `traffic-events` -> batch accumulation + parallel processing
 - `registry-events` -> async handler execution
 
+Sample Request - 
+
+```
+curl -X POST "http://localhost:8085/document/events/send?priority=medium" \
+  -H "Content-Type: application/json" \
+  -d '{"eventId":"evt-1003","eventType":"NEW","docURL":"https://example2.com/docs","timestamp":17356491}'
+{"status":"sent","eventId":"evt-1003","topic":"docs.traffic.medium-priority"}%      
+```
+
 ## Code Flow Sequence Diagram
 
 ```mermaid
