@@ -1,7 +1,8 @@
 package com.searchengine.documentservice.controller;
 
 import com.searchengine.documentservice.dto.DocumentEventDto;
-import com.searchengine.documentservice.service.DocumentEventPublisherService;
+import com.searchengine.documentservice.service.documentEventConsumer.DocumentEventPublisherService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,24 +37,18 @@ public class DocumentController {
     }
 
     @PostMapping("/events/send")
-    @Operation(
-        summary = "Send a Document Event",
-        description = "Publishes a new document event (containing URL, event type, and timestamps) onto a Kafka topic corresponding to the specified priority."
-    )
+    @Operation(summary = "Send a Document Event", description = "Publishes a new document event (containing URL, event type, and timestamps) onto a Kafka topic corresponding to the specified priority.")
     @ApiResponse(responseCode = "200", description = "Event was successfully sent to Kafka")
     @ApiResponse(responseCode = "400", description = "Invalid priority parameter or request payload")
     @ApiResponse(responseCode = "500", description = "Internal error publishing the event")
     public ResponseEntity<?> sendEvent(
-            @Parameter(description = "Queue priority level: 'high', 'medium', or 'low'", required = true, example = "high")
-            @RequestParam String priority,
             @RequestBody DocumentEventDto eventDto) {
         try {
-            String topic = eventPublisherService.publish(priority, eventDto);
+            String topic = eventPublisherService.publish(eventDto);
             return ResponseEntity.ok(Map.of(
                     "status", "sent",
                     "topic", topic,
-                    "eventId", eventDto.getEventId()
-            ));
+                    "eventId", eventDto.getEventId()));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         } catch (IllegalStateException ex) {
