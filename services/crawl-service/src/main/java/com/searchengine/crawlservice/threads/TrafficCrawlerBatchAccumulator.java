@@ -4,11 +4,13 @@ import com.searchengine.crawlservice.model.CrawlerEventDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Component
 public class TrafficCrawlerBatchAccumulator {
 
     private static final Logger logger = LoggerFactory.getLogger(TrafficCrawlerBatchAccumulator.class);

@@ -1,8 +1,39 @@
 server:
   port: 8081
+
 spring:
   application:
     name: crawl-service
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+crawler:
+  events:
+    topics:
+      subscription: docs.subscription.high-priority
+      traffic: docs.traffic.medium-priority
+      registry: docs.registry.low-priority
+  batch-processing:
+    traffic:
+      batch-size: 100
+      batch-timeout-ms: 5000
+      shutdown-timeout-seconds: 30
+  thread-pools:
+    subscription:
+      core-size: 2
+      max-size: 4
+      queue-capacity: 50
+    traffic:
+      core-size: 10
+      max-size: 20
+      queue-capacity: 200
+    registry:
+      core-size: 1
+      max-size: 2
+      queue-capacity: 50
 
 springdoc:
   api-docs:
