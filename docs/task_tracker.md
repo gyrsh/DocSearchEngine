@@ -12,7 +12,7 @@ Use this document to track your progress sequentially. For each task, build/test
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **CHG-001** | Maven Multi-Module Setup | Maven, POM XML | Isolating shared models from application logic to prevent circular module dependencies. | Build succeeds cleanly via `mvn clean install` from the root directory. | **Completed** | - |
 | **CHG-002** | Docker Containerization | Docker Compose | Replicating production-like service setups locally (Postgres, Kafka, Elasticsearch). | Run `docker compose up -d`; check that all containers are healthy. | **Completed** | - |
-| **CHG-003** | Shared Domain Models | Java | Decoupling model definitions from specific service execution logic. | Entities exist in the `shared` module and can be imported across other services. | **Completed** | - |
+| **CHG-003** | Shared Domain Models | Java | Decoupling model definitions from specific service execution logic. | Entities exist in the `shared` module and can be imported across other services. | **Completed** | `701cc48` |
 
 ---
 
@@ -20,7 +20,7 @@ Use this document to track your progress sequentially. For each task, build/test
 
 | Change ID | Task / Phase | Tech Used | L5 Architecture & Design Notes | Verification Goal (What to Test / Verify) | Status | Commit Link |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **CHG-004** | DB Storage Layers Setup | Spring Boot, JPA, PostgreSQL | Setting up initial database connectivity frameworks for persistence. | Run a clean compile and boot any application module without DB connection errors. | **Pending** | - |
+| **CHG-004** | DB Storage Layers Setup | Spring Boot, JPA, PostgreSQL | Setting up initial database connectivity frameworks for persistence. | Run a clean compile and boot any application module without DB connection errors. | **Completed** | `df6492c` |
 | **CHG-005** | Create `schema.sql` | PostgreSQL, SQL DDL | Optimizing schema normalization, primary keys, and index selections for write-heavy tombstone records. | Run Postgres container, execute the schema DDL, and verify all tables (`documents`, `fragments`, `tombstones`) exist. | **Pending** | - |
 | **CHG-006** | Write JPA Entity Models | Java, Hibernate | Mapping complex objects to relational schema. Optimizing lazy loading vs. eager fetching. | Hibernate startup validation successfully runs without mapping errors (e.g., relationship exceptions). | **Pending** | - |
 | **CHG-007** | Configure Datasources | HikariCP, YAML | Connection pool tuning (sizes, idle timeouts) to prevent thread starvation under high transactional QPS. | Boot application and verify that connection counts stay within the configured Hikari pool limits during stress tests. | **Pending** | - |
@@ -56,9 +56,9 @@ Use this document to track your progress sequentially. For each task, build/test
 
 | Change ID | Task / Phase | Tech Used | L5 Architecture & Design Notes | Verification Goal (What to Test / Verify) | Status | Commit Link |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **CHG-019** | Route Priority Consumers | Spring Kafka | Priority Queues: Setting up consumer groups for Subscription (High), Traffic (Medium), and Registry (Low). | Verify priority routing configuration maps to corresponding Kafka topic queues. | **Completed** | - |
-| **CHG-020** | Ingestion Thread Isolation | Spring TaskExecutors | Implementing bulkheads to isolate threads, preventing low-priority tasks from consuming all server resources. | Monitor execution and verify that a flood of Low-priority tasks doesn't starve the High-priority pool. | **Completed** | - |
-| **CHG-021** | Ingestion Batch Buffers | Thread-Safe Lists | Buffer Optimization: In-memory batch accumulation to speed up bulk inserts to PostgreSQL. | Verify that buffering triggers a database flush only when the batch limit (e.g., 100) or timeout is reached. | **Completed** | - |
+| **CHG-019** | Route Priority Consumers | Spring Kafka | Priority Queues: Setting up consumer groups for Subscription (High), Traffic (Medium), and Registry (Low). | Verify priority routing configuration maps to corresponding Kafka topic queues. | **Completed** | `79ba2a1` |
+| **CHG-020** | Ingestion Thread Isolation | Spring TaskExecutors | Implementing bulkheads to isolate threads, preventing low-priority tasks from consuming all server resources. | Monitor execution and verify that a flood of Low-priority tasks doesn't starve the High-priority pool. | **Completed** | `79ba2a1` |
+| **CHG-021** | Ingestion Batch Buffers | Thread-Safe Lists | Buffer Optimization: In-memory batch accumulation to speed up bulk inserts to PostgreSQL. | Verify that buffering triggers a database flush only when the batch limit (e.g., 100) or timeout is reached. | **Completed** | `79ba2a1` |
 | **CHG-022** | Traffic Metrics Scheduler | Spring Scheduler | Distributed scheduling. Preventing double-triggering across multiple scale instances of the service. | Trigger scheduler and verify that lock-records prevent other threads/instances from running duplicate jobs. | **Pending** | - |
 | **CHG-023** | Gap-Based Sequencing | Java, SQL | Utilizing sparse sequence gaps (e.g., indices 100, 200, 300) to support instant middle-inserts without index re-writes. | Insert a fragment in the middle of a document; verify its sequence ID is updated to 150 without touching siblings. | **Pending** | - |
 | **CHG-024** | Segment Rebalancing | Java | Algorithmic rebalance trigger when sparse index gaps are fully exhausted, minimizing locking and surges. | Perform consecutive inserts until space is exhausted (e.g., inserting between 150 and 151); assert re-spacing runs. | **Pending** | - |
